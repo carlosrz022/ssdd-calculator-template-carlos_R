@@ -16,6 +16,14 @@ pruebas = [
     {"id": "t3", "operation": "mult", "args": {"op1": 2, "op2": 4}},
     # División válida
     {"id": "t4", "operation": "div", "args": {"op1": 10, "op2": 2}},
+    # Suma válida con float
+    {"id": "t9", "operation": "sum", "args": {"op1": 1.5, "op2": 2.3}},
+    # Resta válida con float
+    {"id": "t10", "operation": "sub", "args": {"op1": 5.7, "op2": 3.2}},
+    # Multiplicación válida con float
+    {"id": "t11", "operation": "mult", "args": {"op1": 2.56, "op2": 4.1}},
+    # División válida con float
+    {"id": "t12", "operation": "div", "args": {"op1": 10.8, "op2": 2.2}},
     # División por cero
     {"id": "t5", "operation": "div", "args": {"op1": 10, "op2": 0}},
     # Operación inválida
@@ -26,6 +34,7 @@ pruebas = [
     {"id": "t8", "operation": "sum"},
     # Mensaje mal formado (falta id)
     {"operation": "sum", "args": {"op1": 1, "op2": 2}},
+    
 ]
 
 producer = KafkaProducer(
