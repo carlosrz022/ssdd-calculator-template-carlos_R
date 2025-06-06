@@ -74,7 +74,7 @@ ssdd-calculator --Ice.Config=config/calculator.config
 ### 4. Ejecutar el worker de Kafka
 
 ```sh
-kafka-worker --Ice.Config=config/calculator.config
+kafka-worker
 ```
 
 ### 5. Probar el sistema
