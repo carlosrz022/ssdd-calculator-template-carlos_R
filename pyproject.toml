@@ -21,3 +21,4 @@ license = "GPL-3.0-only"
 
 [project.scripts]
 ssdd-calculator = "calculator.command_handlers:calculator"
+kafka-worker = "calculator.command_handlers:kafka_worker"

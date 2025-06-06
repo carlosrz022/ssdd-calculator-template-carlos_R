@@ -43,3 +43,44 @@ package is loaded by Python. It makes your life much easier, as you don't need t
 or submodule that you define.
 
 The code loading the Slice is inside the `__init__.py` file.
+
+## Ejecución completa y pruebas
+
+### 1. Instalar dependencias
+
+```sh
+pip install .
+pip install kafka-python
+```
+
+### 2. Levantar Zookeeper y Kafka (en Docker)
+
+```sh
+docker run -d --name zookeeper -p 2181:2181 zookeeper:3.4.9
+docker run -d --name kafka -p 9092:9092 \
+  -e KAFKA_ZOOKEEPER_CONNECT=172.17.0.1:2181 \
+  -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+  -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 \
+  wurstmeister/kafka
+```
+> Cambia la IP `172.17.0.1` si tu docker0 tiene otra.
+
+### 3. Ejecutar el servidor de la calculadora
+
+```sh
+ssdd-calculator --Ice.Config=config/calculator.config
+```
+
+### 4. Ejecutar el worker de Kafka
+
+```sh
+kafka-worker --Ice.Config=config/calculator.config
+```
+
+### 5. Probar el sistema
+
+```sh
+python3 test_kafka.py
+```
+
+Verás en consola las respuestas a todas las operaciones y errores.
