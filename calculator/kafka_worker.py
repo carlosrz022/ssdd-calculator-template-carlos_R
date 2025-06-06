@@ -4,11 +4,7 @@ import sys
 import os
 from kafka import KafkaConsumer, KafkaProducer
 import Ice
-
 import RemoteCalculator  # pylint: disable=import-error
-
-slice_path = os.path.join(os.path.dirname(__file__), "remotecalculator.ice")
-Ice.loadSlice(slice_path)
 
 KAFKA_BROKER = 'localhost:9092'  # Cambia si es necesario
 REQUEST_TOPIC = 'calculator-requests'
