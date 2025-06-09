@@ -2,6 +2,12 @@
 
 Este repositorio contiene la solución para la práctica de la asignatura Sistemas Distribuidos (SSDD) del curso 2024/2025. El objetivo es implementar un servicio de cálculo remoto usando ZeroC Ice y Apache Kafka para la serialización y gestión de operaciones aritméticas básicas.
 
+## Uso del fichero Slice
+
+El fichero Slice (`calculator/remotecalculator.ice`) define la interfaz remota de la calculadora y las excepciones necesarias para la comunicación con ZeroC Ice.
+
+El código que carga el Slice está en el archivo `calculator/__init__.py`. Esto significa que el Slice solo se carga una vez cuando se importa el paquete `calculator` en Python. Gracias a esto, no necesitas cargar el Slice manualmente en cada módulo o submódulo que definas. Esto simplifica el desarrollo y evita errores de carga duplicada.
+
 ## Instalación de dependencias
 
 Para instalar las dependencias necesarias, ejecuta:
