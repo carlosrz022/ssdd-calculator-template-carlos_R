@@ -1,86 +1,89 @@
-# calculator repository template
+# Práctica de Calculadora Distribuida (SSDD)
 
-Template for the extra SSDD laboratory 2024-2025
+Este repositorio contiene la solución para la práctica de la asignatura Sistemas Distribuidos (SSDD) del curso 2024/2025. El objetivo es implementar un servicio de cálculo remoto usando ZeroC Ice y Apache Kafka para la serialización y gestión de operaciones aritméticas básicas.
 
-## Installation
+## Instalación de dependencias
 
-To locally install the package, just run
-
-```
-pip install .
-```
-
-Or, if you want to modify it during your development,
-
-```
-pip install -e .
-```
-
-## Execution
-
-To run the template server, just install the package and run
-
-```
-ssdd-calculator --Ice.Config=config/calculator.config
-```
-
-## Configuration
-
-This template only allows to configure the server endpoint. To do so, you need to modify
-the file `config/calculator.config` and change the existing line.
-
-For example, if you want to make your server to listen always in the same TCP port, your file
-should look like
-
-```
-calculator.Endpoints=tcp -p 10000
-```
-
-## Slice usage
-
-The Slice file is provided inside the `calculator` directory. It is only loaded once when the `calculator`
-package is loaded by Python. It makes your life much easier, as you don't need to load the Slice in every module
-or submodule that you define.
-
-The code loading the Slice is inside the `__init__.py` file.
-
-## Ejecución completa y pruebas
-
-### 1. Instalar dependencias
+Para instalar las dependencias necesarias, ejecuta:
 
 ```sh
 pip install .
 pip install kafka-python
 ```
 
-### 2. Levantar Zookeeper y Kafka (en Docker)
+## Configuración y despliegue de Kafka
 
-```sh
-docker run -d --name zookeeper -p 2181:2181 zookeeper:3.4.9
-docker run -d --name kafka -p 9092:9092 \
-  -e KAFKA_ZOOKEEPER_CONNECT=172.17.0.1:2181 \
-  -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
-  -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 \
-  wurstmeister/kafka
-```
-> Cambia la IP `172.17.0.1` si tu docker0 tiene otra.
+Para facilitar la ejecución de Kafka, se ha preparado un archivo `docker-compose.yml` que permite levantar el servicio de Kafka de forma sencilla usando Docker.
 
-### 3. Ejecutar el servidor de la calculadora
+Crea (si no existe) el archivo `docker-compose.yml` en la raíz del proyecto con el siguiente contenido:
 
-```sh
-ssdd-calculator --Ice.Config=config/calculator.config
-```
+```yaml
+version: '3.8'
 
-### 4. Ejecutar el worker de Kafka
-
-```sh
-kafka-worker
+services:
+  kafka:
+    container_name: kafka
+    image: quay.io/ccxdev/kafka-no-zk:latest
+    hostname: kafka
+    ports:
+      - 9092:9092
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=localhost
+      - KAFKA_CREATE_TOPICS=calculator-requests:1:1,calculator-responses:1:1
 ```
 
-### 5. Probar el sistema
+Para iniciar Kafka, ejecuta:
 
 ```sh
-python3 test_kafka.py
+docker compose up -d
 ```
 
-Verás en consola las respuestas a todas las operaciones y errores.
+Esto levantará un broker Kafka en el puerto 9092 y creará automáticamente los topics `calculator-requests` y `calculator-responses` que utiliza la práctica.
+
+## Configuración del servidor de la calculadora
+
+El endpoint del servidor se configura en el archivo `config/calculator.config`. Por defecto, el contenido es:
+
+```
+calculator.Endpoints=tcp -p 10000
+```
+
+Puedes cambiar el puerto si lo necesitas.
+
+## Ejecución de la práctica
+
+1. **Inicia Kafka** (si no lo has hecho ya):
+   ```sh
+   docker compose up -d
+   ```
+
+2. **Lanza el servidor de la calculadora:**
+   ```sh
+   ssdd-calculator --Ice.Config=config/calculator.config
+   ```
+
+3. **Lanza el worker de Kafka:**
+   ```sh
+   kafka-worker
+   ```
+
+4. **Prueba el sistema con el script de test:**
+   
+   He creado el script `test_kafka.py` para realizar el testeo de la práctica. Este script envía automáticamente varias peticiones de operaciones (sumas, restas, multiplicaciones, divisiones, casos con floats, errores de formato... ) al topic de peticiones y muestra por pantalla las respuestas recibidas del topic de respuestas.
+
+   Ejecuta:
+   ```sh
+   python3 test_kafka.py
+   ```
+   Verás en consola las respuestas a todas las operaciones y errores, lo que te permite comprobar fácilmente el correcto funcionamiento de toda la práctica.
+
+## Estructura del repositorio
+
+- `calculator/`: Código fuente del servicio de calculadora, worker de Kafka y utilidades.
+- `test_kafka.py`: Script de pruebas automáticas para Kafka.
+- `config/calculator.config`: Configuración del endpoint del servidor.
+- `docker-compose.yml`: Configuración para levantar Kafka con Docker.
+- `README.md`: Este archivo.
+- `pyproject.toml`: Gestión de dependencias del proyecto.
+- `docs/enunciado.md`: Enunciado original de la práctica.
+
